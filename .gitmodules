@@ -1,0 +1,6 @@
+[submodule "awesome/lain"]
+	path = awesome/lain
+	url = https://github.com/copycat-killer/lain.git
+[submodule "awesome/wmove"]
+	path = awesome/wmove
+	url = https://github.com/stoke/awesome-wmove.git
