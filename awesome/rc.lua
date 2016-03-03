@@ -18,9 +18,10 @@ local lain = require('lain')
 local common = require('common')
 local mocp = require('mocp')
 
-local linesfg  = '#d0d0d0'
-local linesbg1 = '#313131'
-local linesbg2 = '#444444'
+local linesfg2  = '#d0d0d0'
+local linesbg2 = '#151515'
+local linesfg1  = '#d0d0d0'
+local linesbg1 = '#166678'
 
 yawn.register(717055)
 
@@ -51,7 +52,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/home/sandro/.config/awesome/themes/default/theme.lua")
+beautiful.init("/home/master/.config/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -96,8 +97,7 @@ end
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {
-  awful.tag({ 1, 2, 3, 4, 5 }, 1, {lain.layout.uselesstile.top, layouts[11], lain.layout.uselesstile.top, layouts[1], layouts[1]}),
-  awful.tag({ 'IM' }, 2, layouts[11])
+  awful.tag({ 1, 2, 3, 4, 5 }, 1, {lain.layout.uselesstile.top, layouts[11], lain.layout.uselesstile.top, layouts[1], layouts[1]})
 }
 -- }}}
 
@@ -144,13 +144,13 @@ for s = 1, screen.count() do
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = 18 })
 
-    local date   = lines:format('%b %d %R', linesfg, linesbg1)
-    local cpu    = lines:format('$1%', linesfg, linesbg2)
-    local mem    = lines:format('$1%', linesfg, linesbg1)
-    local fs     = lines:format('${/ used_gb}GB / ${/ avail_gb}GB', linesfg, linesbg2)
-    local weat   = lines:format('', linesfg, linesbg1)
-    local vol    = lines:format('$1%', linesfg, linesbg2)
-    local therm  = lines:format('$1°C', linesfg, linesbg1)
+    local date   = lines:format('%b %d %R', linesfg1, linesbg1)
+    local cpu    = lines:format('$1%', linesfg2, linesbg2)
+    local mem    = lines:format('$1%', linesfg1, linesbg1)
+    local fs     = lines:format('${/ used_gb}GB / ${/ avail_gb}GB', linesfg2, linesbg2)
+    local weat   = lines:format('', linesfg1, linesbg1)
+    local vol    = lines:format('$1%', linesfg2, linesbg2)
+    local therm  = lines:format('$1°C', linesfg1, linesbg1)
     local music  = nil
 
     vicious.register(date.widget, vicious.widgets.date, date.markup, 60)
@@ -159,8 +159,6 @@ for s = 1, screen.count() do
     vicious.register(fs.widget, vicious.widgets.fs, fs.markup, 60)
     vicious.register(vol.widget, vicious.widgets.volume, vol.markup, 5, 'Master')
     vicious.register(therm.widget, vicious.widgets.thermal, therm.markup, 60, {'coretemp.0', 'core'})
-
-
 
     local dateimg  = lines:img(beautiful.dateicon, linesbg1)
     local cpuimg   = lines:img(beautiful.cpuicon, linesbg2)
@@ -226,7 +224,7 @@ for s = 1, screen.count() do
       if mocp:playing() and not music then
         music = lines:format(
           mocp:format(),
-          linesfg,
+          linesfg2,
           linesbg2
         )
 
@@ -258,6 +256,7 @@ for s = 1, screen.count() do
       last = mocp:format()
     end)
 
+
     moctimer:start()
 
     -- Now bring it all together (with the tasklist in the middle)
@@ -266,17 +265,39 @@ for s = 1, screen.count() do
     layout:set_right(right_layout)
 
     mywibox[s]:set_widget(layout)
+    
+
+    -- bottom wibox
+    local botwibox = awful.wibox({ position = 'bottom', screen = 1, height = 18})
+
+    local bot_right_layout = wibox.layout.fixed.horizontal()
+
+    common.layoutpatch(bot_right_layout)
+    
+    local ip = lines:format('${enp0s3 ip}', linesfg1, linesbg1)
+    vicious.register(ip.widget, vicious.widgets.net, ip.markup, 60)
+
+    local ipimg = lines:img(beautiful.netupicon, linesbg1)
+    
+    bot_right_layout:add(
+      lines:arrow(beautiful.bg_normal).widget
+    )
+
+    bot_right_layout:add(ipimg)
+    bot_right_layout:add(ip.widget)
+
+    local bot_central_layout = wibox.layout.align.horizontal()
+    bot_central_layout:set_right(bot_right_layout)
+
+    botwibox:set_widget(bot_central_layout)
 end
 -- }}}
 
-local botwibox = awful.wibox({ position = 'bottom', screen = 1, height = 18})
 local layout = wibox.layout.align.horizontal()
 
 layout:set_right(
   wibox.widget.systray()
 )
-
-botwibox:set_widget(layout)
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
@@ -353,10 +374,6 @@ awful.rules.rules = {
                      buttons = clientbuttons } },
     { rule = { class = "Firefox" },
        properties = { tag = tags[1][2] } },
-    { rule = { class = "Ts3client_linux_amd64" },
-       properties = { tag = tags[2][1] } },
-    { rule = { class = "Skype" },
-       properties = { tag = tags[2][1] } },
     { rule = { class = "dota_linux" },
        properties = { tag = tags[1][3] } },
     { rule = { class = "Steam" },
@@ -437,8 +454,8 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-awful.util.spawn('xrdb /home/sandro/.Xdefaults')
-awful.util.spawn('xmodmap /home/sandro/.Xmodmap')
+awful.util.spawn('xrdb /home/master/.Xdefaults')
+awful.util.spawn('xmodmap /home/master/.Xmodmap')
 awful.util.spawn('chup firefox')
 awful.util.spawn('chup urxvt')
 awful.util.spawn('chup skype')

@@ -1,7 +1,14 @@
 local wibox = require('wibox')
 
-local lefthardarrow = '\xee\x82\xb2'
-local leftsoftarrow = '\xee\x82\xb3'
+-- local lefthardarrow = "\xee\x82\xb2"
+-- local leftsoftarrow = "\xee\x82\xb3"
+
+function hexify(s)
+    return s:gsub("\\x(%x%x)",function (x) return string.char(tonumber(x,16)) end)
+end
+
+local lefthardarrow = hexify("\\xee\\x82\\xb2")
+local leftsoftarrow = hexify("\\xee\\x82\\xb3")
 
 lines = {
   lastbg = nil,
